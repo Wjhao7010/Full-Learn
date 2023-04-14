@@ -1,0 +1,425 @@
+Linux 是一套类 Unix 操作系统
+是一个基于 POSIX 和 UNIX 的多用户、多任务、支持多线程和多 CPU 的操作系统。
+Linux系统启动过程：
+内核的引导：BIOS开机自检，按照BIOS中设置的启动设备（通常是硬盘）来启动
+读入 /boot 目录下的内核文件
+运行 init：系统所有进程的起点，读取配置文件 /etc/inittab
+系统初始化
+建立终端 
+用户登录系统
+
+Linux关机
+sync 将数据由内存同步到硬盘中
+shutdown #关机指令
+其余有各种关于时间的关机指令            
+不管是关闭系统或者重启，都需要先运行sync                                                                                                                                          
+
+Linux可以用chown和chmod来修改文件或者目录所属用户和权限：
+chown（change owner）：修改所属用户或者组；
+chomd（change mode）：修改用户权限；
+ll或者ls -1 可以显示一个文件的属性和所属的用户和组
+d 在 Linux 中代表该文件是一个目录文件
+- 则是文件
+l 则表示为链接文档(link file)
+b 则表示为装置文件里面的可供储存的接口设备(可随机存取装置)
+c 则表示为装置文件里面的串行端口设备，例如键盘、鼠标(一次性读取装置)
+
+更改文件属性
+1.chgrp：更改文件属组
+chgrp [-R] 属组名 文件名
+-R：递归更改文件属组，该目录下的所有文件的属组都会更改
+2.chown：更改文件属主，可同时更改文件属组
+chown [–R] 属主名 文件名
+chown [-R] 属主名：属组名 文件名
+3.chomd：更改文件9个属性
+Linux文件的基本权限有九个：owner/group/others(拥有者/组/其他) 三种身份的各自的
+read/write/execute权限
+每种身份(owner/group/others)各自的三个权限(r/w/x)分数是需要累加的
+当权限为： -rwxrwx---
+分数则是：
+owner = rwx = 4+2+1 = 7
+group = rwx = 4+2+1 = 7
+others= --- = 0+0+0 = 0
+该文件的权限数字即为770
+chmod [-R] xyz 文件或目录
+xyz : 就数字类型的权限属性，为 rwx 属性数值的相加
+-R : 进行递归(recursive)的持续变更，以及连同次目录下的所有文件都会变更
+
+符号类型改变文件权限
+u, g, o 来代表三种身份的权限
+u是user 
+g是group
+o是others
+a代表all
+chmod u/g/o/a +-= r，w，x 文件或者目录
+例：将文件权限设置为 -rwxr-xr-- ：chmod u=rwx,g=rx,o=r 文件名 
+
+Linux 文件与目录管理
+绝对路径/ 从根目录开始
+相对路径：不从/开始 ， cd ../file
+常用命令：
+ls（list files）: 列出目录及文件名  # ls [ ] 目录名称
+-a ：全部的文件，连同隐藏文件( 开头为 . 的文件) 一起列出来
+-d ：仅列出目录本身，而不是列出目录内的文件数据
+-l ：长数据串列出，包含文件的属性与权限等等数据
+
+cd（change directory）：切换目录  
+cd [相对路径或绝对路径]
+
+pwd（print work directory）：显示目前的目录
+# pwd [-P]
+-P ：显示出确实的路径，而非使用链接 (link) 路径。
+
+mkdir（make directory）：创建一个新的目录
+mkdir [-mp] 目录名称
+-m ：配置文件的权限，不需要看默认权限
+-p ：帮助你直接将所需要的目录(包含上一级目录)递归创建
+
+rmdir（remove directory）：删除一个空的目录
+rmdir [-p] 目录名称
+-p ：从该目录起，一次删除多级空目录
+
+cp（copy file）: 复制文件或目录
+# cp [-adfilprsu] 来源档(source) 目标档(destination)
+# cp [options] source1 source2 source3 .... directory
+-a：相当於 -pdr 的意思，至於 pdr 请参考下列说明
+-d：若来源档为链接档的属性(link file)，则复制链接档属性而非文件本身
+-f：为强制(force)的意思，若目标文件已经存在且无法开启，则移除后再尝试一次
+-i：若目标档(destination)已经存在时，在覆盖时会先询问动作的进行(常用)
+-l：进行硬式链接(hard link)的链接档创建，而非复制文件本身
+-p：连同文件的属性一起复制过去，而非使用默认属性(备份常用)
+-r：递归持续复制，用于目录的复制
+-s：复制成为符号链接档 (symbolic link)，亦即『捷径』文件
+-u：若 destination 比 source 旧才升级 destination 
+
+rm（remove）: 删除文件或目录
+rm [-fir] 文件或目录
+-f ：就是 force 的意思，忽略不存在的文件，不会出现警告信息
+-i ：互动模式，在删除前会询问使用者是否动作
+-r ：递归删除，最常用在目录的删除（warning）
+
+mv（move file）: 移动文件与目录，或修改文件与目录的名称
+# mv [-fiu] source destination
+# mv [options] source1 source2 source3 .... directory
+-f ：force 强制的意思，如果目标文件已经存在，不会询问而直接覆盖
+-i ：若目标文件 (destination) 已经存在时，就会询问是否覆盖
+-u ：若目标文件已经存在，且 source 比较新，才会升级 (update)
+
+Linux 文件内容查看
+cat  由第一行开始显示文件内容
+cat [-AbEnTv]
+-A ：相当於 -vET 的整合选项，可列出一些特殊字符而不是空白而已
+-b ：列出行号，仅针对非空白行做行号显示，空白行不标行号
+-E ：将结尾的断行字节 $ 显示出来
+-n ：列印出行号，连同空白行也会有行号，与 -b 的选项不同
+-T ：将 [tab] 按键以 ^I 显示出来
+-v ：列出一些看不出来的特殊字符
+
+tac  从最后一行开始显示，可以看出 tac 是 cat 的倒着写
+# tac /etc/issue
+
+nl   显示的时候，输出行号
+nl [-bnw] 文件
+-b ：指定行号指定的方式，主要有两种
+-b a ：表示不论是否为空行，也同样列出行号(类似 cat -n)
+-b t ：如果有空行，空的那一行不要列出行号(默认值)
+-n ：列出行号表示的方法，主要有三种
+-n ln ：行号在荧幕的最左方显示
+-n rn ：行号在自己栏位的最右方显示，且不加 0 
+-n rz ：行号在自己栏位的最右方显示，且加 0 
+-w ：行号栏位的占用的位数
+
+more 一页一页的显示文件内容
+# more /etc/man_db.config 
+空白键 (space)：代表向下翻一页
+Enter         ：代表向下翻『一行』
+/字串         ：代表在这个显示的内容当中，向下搜寻『字串』这个关键字
+:f            ：立刻显示出档名以及目前显示的行数
+q             ：代表立刻离开 more ，不再显示该文件内容
+b 或 [ctrl]-b ：代表往回翻页，不过这动作只对文件有用，对管线无用
+less 与 more 类似，但是比 more 更好的是，他可以往前翻页
+# less /etc/man.config
+空白键    ：向下翻动一页
+[pagedown]：向下翻动一页
+[pageup]  ：向上翻动一页
+/字串：向下搜寻『字串』的功能
+?字串：向上搜寻『字串』的功能
+n：重复前一个搜寻 (与 / 或 ? 有关！)
+N：反向的重复前一个搜寻 (与 / 或 ? 有关！)
+q：离开 less 这个程序
+
+head 取出文件前面几行
+head [-n number] 文件 
+-n ：后面接数字，代表显示几行的意思
+默认的情况中，显示前面 10 行
+显示前 20 行：# head -n 20 /etc/man.config
+
+tail 取出文件后面几行
+tail [-n number] 文件 
+-n ：后面接数字，代表显示几行的意思
+-f ：表示持续侦测后面所接的档名，要等到按下[ctrl]-c才会结束tail的侦测
+
+Linux 用户和用户组管理
+使用系统资源的用户必须先向系统管理员申请一个账号，应用这个账号进入这个系统
+账号可以帮助管理员进行一些工作：一是对用户进行追踪，控制资源的访问；
+二是帮助用户组织文件，并且提供安全保护
+用户管理：
+对账号的增删改
+口令管理
+用户组管理
+
+添加新用户：useradd 选项 用户名
+-c comment 指定一段注释性描述
+-d 目录 指定用户主目录，如果此目录不存在，则同时使用-m选项，可以创建主目录
+-g 用户组 指定用户所属的用户组
+-G 用户组，用户组 指定用户所属的附加组
+-s Shell文件 指定用户的登录Shell
+-u 用户号 指定用户的用户号，如果同时有-o选项，则可以重复使用其他用户的标识号
+eg ：# useradd –d  /home/sam -m sam
+创建了sam用户，-d-m来给sam产生了一个主目录
+# useradd -s /bin/sh -g group –G adm,root gem
+创建了gem用户，登录Shell是/bin/sh，并且属于group用户组，同时属于adm和root组，group为主组
+userconf可以用来对用户账号进行统一管理
+
+删除账号
+删除用户记录，甚至用户的主目录
+userdel 选项 用户名 
+-r的作用是把用户主目录一起删除
+eg：# userdel -r sam
+
+修改账号
+根据实际情况更改用户的有关属性：用户号、主目录、用户组和登录Shell
+usermod 选项 用户名
+-l 新用户名
+eg：# usermod -s /bin/ksh -d /home/z –g developer sam
+
+用户口令管理
+指定口令后用户账号才能进行使用，空口令也可
+超级用户可以给自己和他人指定口令，普通用户只能修改自己的口令
+passwd 选项 用户名
+-l 锁定口令，即禁用账号
+-u 口令解锁
+-d 使账号无口令
+-f 强迫用户下次登录时修改口令
+普通用户修改自己的口令时，passwd命令会先询问原口令
+超级用户为用户指定口令时，就不需要知道原口令
+# passwd -d sam 删除sam的口令
+# passwd -l sam    -l(lock) 选项锁定某一用户，使其不能登录
+
+Linux系统用户组的管理
+对用户进行集中管理
+增加一个新的用户组 
+groupadd 选项 用户组
+-g GID 指定新用户组的组标识号（GID）
+-o 一般与-g选项同时使用，表示新用户组的GID可以与系统已有用户组的GID相同
+eg：# groupadd group1    增加一个新租group1
+# groupadd -g 123 group2  增加一个新租group2，标识号为123
+删除用户组
+groupdel 用户组
+eg：# groupdel group1
+修改用户组的属性 使用groupmod命令
+groupmod 选项 用户组
+-g GID 为用户组指定新的组标识号
+-o 与-g选项同时使用，用户组的新GID可以与系统已有用户组的GID相同
+-n新用户组 将用户组的名字改为新名字
+eg：# groupmod -g 132 group2
+# groupmod –g 10000 -n group3 group2
+如果一个用户同属于多个组，用户则可以在不同用户组之间切换
+$ newgrp root
+
+与用户账号有关的系统文件
+/etc/passwd文件 ，用户管理工作涉及的最重要的一个文件
+每个用户都在/etc/passwd文件中有一个对应的记录行
+记录了这个用户的一些基本属性
+对所有用户都是可读的
+用户名:口令:用户标识号:组标识号:注释性描述:主目录:登录Shell
+伪用户（pseudo users），在/etc/passwd文件中也占有一条记录，但是不能登录，Shell为空
+主要是为了方便系统管理，满足相应的系统进程对文件属主的要求
+
+拥有帐户文件
+许多标准的伪用户，例如：audit, cron, mail, usenet等，它们也都各自为相关的进程和文件所需要
+Linux系统都把加密后的口令字分离出来，单独存放在一个文件中，这个文件是/etc/shadow文件
+超级用户才拥有该文件读权限，保证了用户密码的安全性
+/etc/shadow中的记录行与/etc/passwd中的一一对应，pwconv命令根据/etc/passwd中的数据自动产生
+文件格式：登录名:加密口令:最后一次修改时间:最小时间间隔:最大时间间隔:警告时间:不活动时间:失效时间:标志
+
+用户组的所有信息都存放在/etc/group文件中
+管理及控制访问权限的一种手段
+一个组中可以有多个用户，一个用户也可以属于不同的组
+/etc/passwd文件中记录的是用户所属的主组，其他组称为附加组
+访问属于附加组的文件时，必须首先使用newgrp命令使自己成为所要访问的组中的成员
+文件格式：组名:口令:组标识号:组内用户列表
+
+
+添加批量用户
+编辑一个文本用户文件
+每一列按照/etc/passwd密码文件的格式书写
+
+以root身份执行命令 /usr/sbin/newusers，从刚创建的用户文件user.txt中导入数据，创建用户
+# newusers < user.txt
+执行命令 vipw 或 vi /etc/passwd 检查 /etc/passwd 文件是否已经出现这些用户的数据
+用户的宿主目录是否已经创建
+
+执行命令/usr/sbin/pwunconv
+对shadow 密码解码，回写到 /etc/passwd中，将/etc/shadow的shadow密码栏删掉
+# pwunconv
+
+编辑每个用户的密码对照文件
+用户名:密码
+
+以 root 身份执行命令 /usr/sbin/chpasswd
+创建用户密码，chpasswd 会将经过 /usr/bin/passwd 命令编码过的密码写入 /etc/passwd 的密码栏
+# chpasswd < passwd.txt
+
+确定密码经编码写入/etc/passwd的密码栏后
+执行命令 /usr/sbin/pwconv 将密码编码为 shadow password，并将结果写入 /etc/shadow
+# pwconv
+完成了大量用户的创建
+
+
+Linux 磁盘管理
+三个常用命令：
+df（disk free）：列出文件系统的整体磁盘使用量
+df命令参数功能：检查文件系统的磁盘空间占用情况
+df [-ahikHTm] [目录或文件名]
+-a ：列出所有的文件系统，包括系统特有的 /proc 等文件系统
+-k ：以 KBytes 的容量显示各文件系统
+-m ：以 MBytes 的容量显示各文件系统
+-h ：以人们较易阅读的 GBytes, MBytes, KBytes 等格式自行显示
+-H ：以 M=1000K 取代 M=1024K 的进位方式
+-T ：显示文件系统类型, 连同该 partition 的 filesystem 名称 (例如 ext3) 也列出
+-i ：不用硬盘容量，而以 inode 的数量来显示
+
+du（disk used）：检查磁盘空间使用量
+对文件和目录磁盘使用的空间的查看
+du [-ahskm] 文件或目录名称
+-a ：列出所有的文件与目录容量，因为默认仅统计目录底下的文件量而已
+-h ：以人们较易读的容量格式 (G/M) 显示
+-s ：列出总量而已，而不列出每个各别的目录占用容量
+-S ：不包括子目录下的总计，与 -s 有点差别
+-k ：以 KBytes 列出容量显示
+-m ：以 MBytes 列出容量显示
+
+fdisk：用于磁盘分区
+磁盘分区表操作工具
+fdisk [-l] 装置名称
+-l ：输出后面接的装置所有的分区内容。若仅有 fdisk -l 时， 则系统将会把整个系统内能够搜寻到的装置的分区均列出来
+
+磁盘格式化 （make filesystem）
+mkfs [-t 文件系统格式] 装置文件名
+-t ：可以接文件系统格式，例如 ext3, ext2, vfat 等(系统有支持才会生效)
+
+磁盘检验
+fsck（file system check）
+检查和维护不一致的文件系统
+fsck [-t 文件系统] [-ACay] 装置名称
+-t : 给定档案系统的型式，若在 /etc/fstab 中已有定义或 kernel 本身已支援的则不需加上此参数
+-s : 依序一个一个地执行 fsck 的指令来检查
+-A : 对/etc/fstab 中所有列出来的 分区（partition）做检查
+-C : 显示完整的检查进度
+-d : 打印出 e2fsck 的 debug 结果
+-p : 同时有 -A 条件时，同时有多个 fsck 的检查一起执行
+-R : 同时有 -A 条件时，省略 / 不检查
+-V : 详细显示模式
+-a : 如果检查有错则自动修复
+-r : 如果检查有错则由使用者回答是否修复
+-y : 选项指定检测每个文件是自动输入yes，在不确定那些是不正常的时候，可以执行 # fsck -y 全部检查修复
+
+磁盘挂载与卸除
+磁盘挂载使用 mount 命令，卸载使用 umount 命令
+mount [-t 文件系统] [-L Label名] [-o 额外选项] [-n]  装置文件名  挂载点
+umount [-fn] 装置文件名或挂载点
+-f ：强制卸除！可用在类似网络文件系统 (NFS) 无法读取到的情况下
+-n ：不升级 /etc/mtab 情况下卸除
+
+
+Linux vi/vim
+vim编辑器，具有程序编辑的能力
+vi 是老式的字处理器
+vim 是程序开发者的一项很好用的工具
+有三种模式：命令模式（Command mode），输入模式（Insert mode）和底线命令模式（Last line mode）
+命令模式：
+启动vi/vim就直接进入
+i 切换到输入模式，以输入字符
+x 删除当前光标所在处的字符
+: 切换到底线命令模式，以在最底一行输入命令
+
+输入模式
+字符按键以及Shift组合，输入字符
+ENTER，回车键，换行
+BACK SPACE，退格键，删除光标前一个字符
+DEL，删除键，删除光标后一个字符
+方向键，在文本中移动光标
+HOME/END，移动光标到行首/行尾
+Page Up/Page Down，上/下翻页
+Insert，切换光标为输入/替换模式，光标将变成竖线/下划线
+ESC，退出输入模式，切换到命令模式
+
+底线命令模式
+基本的命令：
+q 退出程序
+w 保存文件
+ESC键可退出底线命令模式
+
+vi/vim 使用实例
+使用 vi 来建立一个名为 .txt 的文件
+$ vim .txt
+直接输入 vi 文件名 就能够进入 vi 的一般模式
+i 进入输入模式(也称为编辑模式)，开始编辑文字
+ESC 按钮回到一般模式
+一般模式中按下 :wq 储存后离开 vi
+
+Linux yum 命令
+yum-Shell 前端软件包管理器
+基于 RPM 包管理，能够从指定的服务器自动下载 RPM 包并且安装
+yum 提供了查找、安装、删除某一个、一组甚至全部软件包的命令
+yum [options] [command] [package ...]
+options：可选，选项包括-h（帮助），-y（当安装过程提示选择全部为 "yes"），-q（不显示安装的过程）
+command：要进行的操作
+package：安装的包名
+
+yum常用命令
+1. 列出所有可更新的软件清单命令：yum check-update
+2. 更新所有软件命令：yum update
+3. 仅安装指定的软件命令：yum install <package_name>
+4. 仅更新指定的软件命令：yum update <package_name>
+5. 列出所有可安裝的软件清单命令：yum list
+6. 删除软件包命令：yum remove <package_name>
+7. 查找软件包命令：yum search <keyword>
+8. 清除缓存命令:
+yum clean packages: 清除缓存目录下的软件包
+yum clean headers: 清除缓存目录下的 headers
+yum clean oldheaders: 清除缓存目录下旧的 headers
+yum clean, yum clean all (= yum clean packages; yum clean oldheaders) :清除缓存目录下的软件包及旧的 headers
+
+
+Linux apt 命令（Advanced Packaging Tool）
+执行需要超级管理员权限(root)
+apt [options] [command] [package ...]
+列出所有可更新的软件清单命令：sudo apt update
+升级软件包：sudo apt upgrade
+列出可更新的软件包及版本信息：apt list --upgradeable
+升级软件包，升级前先删除需要更新软件包：sudo apt full-upgrade
+安装指定的软件命令：sudo apt install <package_name>
+安装多个软件包：sudo apt install <package_1> <package_2> <package_3>
+更新指定的软件命令：sudo apt update <package_name>
+显示软件包具体信息,例如：版本号，安装大小，依赖关系等等：sudo apt show <package_name>
+删除软件包命令：sudo apt remove <package_name>
+清理不再使用的依赖和库文件: sudo apt autoremove
+移除软件包及配置文件: sudo apt purge <package_name>
+查找软件包命令： sudo apt search <keyword>
+列出所有已安装的包：apt list --installed
+列出所有已安装的包的版本信息：apt list --all-versions
+
+
+
+
+
+
+
+
+
+
+
+
+
