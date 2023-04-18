@@ -1,7 +1,8 @@
 from functools import reduce
 
-from webencodings import labels
 
+# 纯手敲，但是好久不写了，好陌生
+# 但是 为啥没打印？？？
 
 class Perception(object):
     def __init__(self, input_num, activator):
@@ -55,7 +56,7 @@ class Perception(object):
             # 更新权重
             self._update_weights(input_vec, output, label, rate)
 
-    def _update_weights(self, input_vec, output, label ,rate):
+    def _update_weights(self, input_vec, output, label, rate):
         """
         按照感知器的规则更新权重
         """
@@ -64,9 +65,54 @@ class Perception(object):
         # 然后利用感知器规则更新权重
         delta = label - output
         self.weights = map(
-            lambda x, w:w + rate * delta * x,
+            lambda x, w: w + rate * delta * x,
             zip(input_vec, self.weights)
         )
         # 更新bias
         self.bias += rate * delta
+
+
+def f(x):
+    """
+    定义激活函数
+    """
+    return 1 if x > 0 else 0
+
+
+def get_training_dataset():
+    """
+    基于and真值表构建训练数据
+    """
+    # 构建训练数据
+    # 输入向量列表
+    input_vecs = [[1, 1], [0, 0], [1, 0], [0, 1]]
+    # 期望的输出列表，要与输入的两个真值一一对应
+    # 11对应1,00对应0,10对应0,01对应0
+    labels = [1, 0, 0, 0]
+    return input_vecs, labels
+
+
+def train_and_perceptron():
+    """
+    使用and真值表来训练感知器
+    """
+    # 创建感知器，输入参数个数为2个（0或者1），and是二元函数，激活函数为f（x）
+    p = Perception(2, f)
+    # 训练并且迭代10轮，学习速率一塔为0.1
+    input_vecs, labels = get_training_dataset()
+    p.train(input_vecs, labels, 10, 0.1)
+    # 返回训练好的感知器
+    return p
+
+
+if __name__ == 'main':
+    # 训练and感知器
+    and_perceptron = train_and_perceptron()
+    # 打印训练所获得的权重
+    print(and_perceptron)
+    # 测试
+    print('1 and 1 = %d' % and_perceptron.predict([1, 1]))
+    print('0 and 0 = %d' % and_perceptron.predict([0, 0]))
+    print('1 and 0 = %d' % and_perceptron.predict([1, 0]))
+    print('0 and 1 = %d' % and_perceptron.predict([0, 1]))
 
