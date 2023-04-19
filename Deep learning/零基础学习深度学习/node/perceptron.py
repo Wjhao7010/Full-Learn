@@ -2,7 +2,7 @@ from functools import reduce
 
 
 # 纯手敲，但是好久不写了，好陌生
-# 但是 为啥没打印？？？
+
 
 class Perception(object):
     def __init__(self, input_num, activator):
@@ -32,12 +32,14 @@ class Perception(object):
         # 最后用reduce求和
         return self.activator(
             reduce(lambda a, b: a + b,
-                   map(lambda x, w: x * w,
-                       zip(input_vec, self.weights)), 0.0) + self.bias)
+                   map(lambda xw: xw[0] * xw[1],
+                       zip(input_vec, self.weights)),
+                   0.0) + self.bias)
 
     def train(self, input_vecs, labels, iteration, rate):
         """
         输入对应的训练数据：一组向量、与每个向量对应的label；以及训练轮数和学习率
+        然后得到每次训练后的更新
         """
         for i in range(iteration):
             self._one_iteration(input_vecs, labels, rate)
@@ -46,7 +48,7 @@ class Perception(object):
         """
         通过一次迭代，把所有的训练数据都过一遍
         """
-        # 把输入和输出打包在一起，成为样本的列表【（input_vecs, label),...]
+        # 把输入和输出打包在一起，成为样本的列表[（input_vecs, label),...]
         # 而每个循例那样本事(input_vec, label)
         samples = zip(input_vecs, labels)
         # 对每个样本都按照感知器的规则重新更新权重
@@ -65,7 +67,7 @@ class Perception(object):
         # 然后利用感知器规则更新权重
         delta = label - output
         self.weights = map(
-            lambda x, w: w + rate * delta * x,
+            lambda xw: xw[1] + rate * delta * xw[0],
             zip(input_vec, self.weights)
         )
         # 更新bias
@@ -105,7 +107,7 @@ def train_and_perceptron():
     return p
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     # 训练and感知器
     and_perceptron = train_and_perceptron()
     # 打印训练所获得的权重
@@ -115,4 +117,5 @@ if __name__ == 'main':
     print('0 and 0 = %d' % and_perceptron.predict([0, 0]))
     print('1 and 0 = %d' % and_perceptron.predict([1, 0]))
     print('0 and 1 = %d' % and_perceptron.predict([0, 1]))
+
 
