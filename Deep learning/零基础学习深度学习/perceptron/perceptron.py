@@ -2,9 +2,9 @@ from functools import reduce
 
 
 # 纯手敲，但是好久不写了，好陌生
+# 修改了一点小错误~（拼写），并且加上了list
 
-
-class Perception(object):
+class Perceptron(object):
     def __init__(self, input_num, activator):
         """
         这里函数的目的是初始化感知器，设置好输入参数的个数和激活函数
@@ -20,7 +20,7 @@ class Perception(object):
         """
         打印出感知器所学习到的权重和偏置项
         """
-        return 'weights\t:%s\nbias\t:%f\n' % (self.weights, self.bias)
+        return 'weights\t:%s\nbias\t:%f\n' % (list(self.weights), self.bias)
 
     def predict(self, input_vec):
         """
@@ -66,10 +66,10 @@ class Perception(object):
         # 变成[(x1,w1),(x2,w2),(x3,w3),...]
         # 然后利用感知器规则更新权重
         delta = label - output
-        self.weights = map(
+        self.weights = list(map(
             lambda xw: xw[1] + rate * delta * xw[0],
             zip(input_vec, self.weights)
-        )
+        ))
         # 更新bias
         self.bias += rate * delta
 
@@ -99,7 +99,7 @@ def train_and_perceptron():
     使用and真值表来训练感知器
     """
     # 创建感知器，输入参数个数为2个（0或者1），and是二元函数，激活函数为f（x）
-    p = Perception(2, f)
+    p = Perceptron(2, f)
     # 训练并且迭代10轮，学习速率一塔为0.1
     input_vecs, labels = get_training_dataset()
     p.train(input_vecs, labels, 10, 0.1)
